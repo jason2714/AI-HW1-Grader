@@ -373,4 +373,5 @@ if __name__ == '__main__':
                          printTestCase=options.printTestCase,
                          questionToGrade=options.gradeQuestion,
                          display=getDisplay(options.gradeQuestion != None, options))
-        print student_id + ',' + ','.join(map(str, grade.values()))
+        grade = [grade[key] for key in sorted(grade.keys())]
+        print student_id + ',' + ','.join(map(str, grade))
