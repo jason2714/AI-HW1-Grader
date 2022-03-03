@@ -1,0 +1,81 @@
+searchTestClasses
+searchTestClasses.py
+Starting on 2-27 at 14:39:18
+
+Question q1
+===========
+
+*** PASS: test_cases\q1\graph_backtrack.test
+*** 	solution:		['1:A->C', '0:C->G']
+*** 	expanded_states:	['A', 'D', 'C']
+*** PASS: test_cases\q1\graph_bfs_vs_dfs.test
+*** 	solution:		['2:A->D', '0:D->G']
+*** 	expanded_states:	['A', 'D']
+*** PASS: test_cases\q1\graph_infinite.test
+*** 	solution:		['0:A->B', '1:B->C', '1:C->G']
+*** 	expanded_states:	['A', 'B', 'C']
+*** PASS: test_cases\q1\graph_manypaths.test
+*** 	solution:		['2:A->B2', '0:B2->C', '0:C->D', '2:D->E2', '0:E2->F', '0:F->G']
+*** 	expanded_states:	['A', 'B2', 'C', 'D', 'E2', 'F']
+*** PASS: test_cases\q1\pacman_1.test
+*** 	pacman layout:		mediumMaze
+*** 	solution length: 130
+*** 	nodes expanded:		146
+
+### Question q1: 20/20 ###
+
+
+Question q2
+===========
+
+*** FAIL: Terminated with a string exception.
+
+### Question q2: 0/20 ###
+
+
+Question q3
+===========
+
+*** FAIL: Exception raised: global name 'kadjklfjkldjslkfs' is not defined
+*** 
+*** Traceback (most recent call last):
+***   File "D:\python\HW1\grader\grading.py", line 80, in grade
+***     util.TimeoutFunction(getattr(gradingModule, q), 2)(self)  # Call the question's function
+***   File "D:\python\HW1\grader\util.py", line 667, in __call__
+***     result = self.function(*args, **keyArgs)
+***   File "autograder.py", line 311, in <lambda>
+***     return lambda grades: question.execute(grades)
+***   File "D:\python\HW1\grader\testClasses.py", line 57, in execute
+***     if not f(grades):
+***   File "autograder.py", line 305, in <lambda>
+***     return lambda grades: testCase.execute(grades, moduleDict, solutionDict)
+***   File "searchTestClasses.py", line 201, in execute
+***     solution, expanded_states, error = self.getSolInfo(search)
+***   File "searchTestClasses.py", line 185, in getSolInfo
+***     solution = alg(problem)
+***   File "r10922100_hw1.py", line 136, in uniformCostSearch
+*** NameError: global name 'kadjklfjkldjslkfs' is not defined
+*** 
+
+### Question q3: 0/30 ###
+
+
+Question q4
+===========
+
+*** Method not implemented: aStarSearch at line 142 of r10922100_hw1.py
+*** FAIL: Terminated with a string exception.
+
+### Question q4: 0/30 ###
+
+
+Finished at 14:39:20
+
+Provisional grades
+==================
+Question q1: 20/20
+Question q2: 0/20
+Question q3: 0/30
+Question q4: 0/30
+------------------
+Total: 20/100
