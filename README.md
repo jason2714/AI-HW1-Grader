@@ -9,7 +9,7 @@ https://drive.google.com/drive/u/0/folders/1wUaj0dNzj6WTAOUjXUU_zWX5SdVpVd-E
 3.若使用windows平台操作，code中遇到while true會出錯，盡量使用linux
 
 批次批改指令:
-```
+```shell
 python3 grader.py
 optional arguments:
   -h, --help            show this help message and exit
@@ -35,7 +35,7 @@ optional arguments:
 ```
 
 只judge數份作業指令:
-```
+```shell
 python3 grader.py -I r12345678 r87654321 ...
 ```
 不會蓋掉原本的args.grade_path
@@ -45,7 +45,7 @@ python3 grader.py -I r12345678 r87654321 ...
 輸出:
 1.成績會寫入args.grade_path
 每一列的資料如下
-```
+```shell
 ['Student ID', 'Problem1', 'Problem2', 'Problem3', 'Problem4', 'Total points']
 ```
 滿分為20, 20, 30, 30, 100
