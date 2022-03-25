@@ -1,8 +1,13 @@
 import sys
-from subprocess import check_output
+from subprocess import check_output, CalledProcessError, STDOUT
 import os
 import csv
 import threading
+from argparse import ArgumentParser
+from pathlib import Path
+from typing import List
+
+MAX_THREAD_NUM = 8
 
 
 def remove_grade(s):
@@ -11,36 +16,46 @@ def remove_grade(s):
 
 
 class Mythread(threading.Thread):
+    thread_pool = threading.BoundedSemaphore(MAX_THREAD_NUM)
+
     def __init__(self, sid):
         super(Mythread, self).__init__()
         self.sid = sid
         self.score = None
         self.script = self.get_base_script()
-        self.log = 'code not found or name error\n'
+        self.log = 'code not found, name error or runtime error\n'
 
     def run(self):
-        print 'Executing student {}\'s code...'.format(self.sid)
-        log_file = open(os.path.join('student_log', '{}.txt'.format(self.sid)), 'w')
-        self.script += ['autograder.py', '-S', 'searchAgents.py,student_code/{}_hw1.py'.format(self.sid)]
-        if os.path.isfile(os.path.join('student_code', '{}_hw1.py'.format(self.sid))):
-            self.get_log_and_score()
-        else:
-            self.score = [self.sid] + ['0'] * 4 + ['-1']
+        self.thread_pool.acquire()
+        print('Executing student {}\'s code...'.format(self.sid))
+        log_path = args.log_dir / '{}.txt'.format(self.sid)
+        log_file = log_path.open('w')
+        self.script += ['autograder.py', '-S', 'searchAgents.py,{}/{}_hw1.py'.format(args.code_dir, self.sid)]
+        self.get_log_and_score()
         log_file.write(self.log)
         log_file.close()
-        print 'Finish grading student {}.'.format(self.sid)
+        print('Finish grading student {}.'.format(self.sid))
+        self.thread_pool.release()
 
-    def join(self, *args):
+    def join(self, *args_) -> List[str]:
         threading.Thread.join(self)
         return self.score
 
     def get_log_and_score(self):
         # print threading.current_thread().getName() + '\n'
-        out = check_output(self.script)
-        self.score = out.splitlines()[-1].split(',')
-        total = sum(map(int, self.score[1:]))
-        self.score.append(str(total))
-        self.log = remove_grade(out)
+        try:
+            out = check_output(self.script, stderr=STDOUT)
+            if isinstance(out, bytes):
+                out = out.decode('utf-8')
+            self.score = out.splitlines()[-1].split(',')
+            total = sum(map(int, self.score[1:]))
+            self.score.append(str(total))
+            self.log = remove_grade(out)
+        except CalledProcessError as e:
+            self.score = [self.sid] + ['0'] * 4 + ['-1']
+            log = e.output
+            if isinstance(log, bytes):
+                self.log = log.decode('utf-8')
 
     def get_base_script(self):
         is_win = sys.platform.startswith('win')
@@ -64,49 +79,101 @@ def parallel_grading(student_list):
     return thread_list
 
 
-def init_csv(csv_name='grade.csv'):
+def init_csv(csv_name):
     if not os.path.isfile(csv_name):
-        with open(csv_name, 'wb') as csv_file:
-            csv.writer(csv_file).writerow(
-                ['Student ID', 'Problem1', 'Problem2', 'Problem3', 'Problem4', 'Total Points'])
-    with open(csv_name, 'r') as csv_file:
+        return [['Student ID', 'Problem1', 'Problem2', 'Problem3', 'Problem4', 'Total Points']]
+    with csv_name.open('r') as csv_file:
         return list(csv.reader(csv_file))
 
 
 def main():
-    csv_rows = init_csv('grade.csv')
-    if len(sys.argv) < 2:
-        csv_rows = csv_rows[:1]
-        with open('student_list.txt', 'r') as student_list_file:
-            thread_list = parallel_grading(student_list_file.read().splitlines())
-        for thread in thread_list:
-            grade_score = thread.join()
-            csv_rows.append(grade_score)
+    csv_rows = init_csv(args.grade_path)
+    if args.ID_list:
+        id_list = args.ID_list
     else:
-        thread_list = parallel_grading(sys.argv[1:])
-        for thread in thread_list:
-            grade_score = thread.join()
+        with open(args.list_path, 'r') as student_list_file:
+            id_list = student_list_file.read().splitlines()
+    thread_list = parallel_grading(id_list)
+    if not args.modify_grade:
+        csv_rows = csv_rows[:1]
+    for thread in thread_list:
+        if args.modify_grade:
+            grade_score: List[str] = thread.join()
             grade_exist = False
             for row in csv_rows[1:]:
                 if row[0] == grade_score[0]:
                     grade_exist = True
-                    print 'Student {} :'.format(row[0])
-                    print 'Old grade : ' + ', '.join(row)
-                    print 'New grade : ' + ', '.join(grade_score)
+                    print('Student {} :'.format(row[0]))
+                    print('Old grade : ' + ', '.join(row))
+                    print('New grade : ' + ', '.join(grade_score))
                     if int(grade_score[-1]) > int(row[-1]):
-                        print 'Update {}\'s total grade from {}  to {}'.format(row[0], row[-1], grade_score[-1])
+                        print('Update {}\'s total grade from {}  to {}'.format(row[0], row[-1], grade_score[-1]))
                         row[1:] = grade_score[1:]
                     else:
-                        print 'New grade is equal or lower than old grade'
+                        print('New grade is equal or lower than old grade')
             if not grade_exist:
-                print 'Append {}\'s grade : '.format(grade_score[0])
-                print ', '.join(grade_score)
+                print('Append {}\'s grade : '.format(grade_score[0]))
+                print(', '.join(grade_score))
                 csv_rows.append(grade_score)
-            print
-    with open('grade.csv', 'wb+') as csvfile:
+            print()
+        else:
+            grade_score = thread.join()
+            csv_rows.append(grade_score)
+    with args.grade_path.open('w+', newline='') as csvfile:
         writer = csv.writer(csvfile)
         writer.writerows(csv_rows)
 
 
+def parse_args():
+    parser = ArgumentParser()
+    parser.add_argument(
+        '-C',
+        "--code_dir",
+        type=Path,
+        help="Directory to Student Code.",
+        default="./student_code",
+    )
+    parser.add_argument(
+        '-IL',
+        "--list_path",
+        type=Path,
+        help="Path to Student List.",
+        default="./student_list.txt",
+    )
+    parser.add_argument(
+        '-I',
+        "--ID_list",
+        type=str,
+        nargs='+',
+        help="Student ID List.",
+        default=[]
+    )
+    parser.add_argument(
+        '-L',
+        "--log_dir",
+        type=Path,
+        help="Directory to save the log file.",
+        default="./student_log",
+    )
+    parser.add_argument(
+        '-G',
+        "--grade_path",
+        type=Path,
+        help="Path to Grade file.",
+        default="./grade.csv",
+    )
+    parser.add_argument(
+        '-M',
+        "--modify_grade",
+        action='store_true',
+        help="modify exist csv or create csv",
+        default=False,
+    )
+    args_ = parser.parse_args()
+    args_.log_dir.mkdir(parents=True, exist_ok=True)
+    return args_
+
+
 if __name__ == '__main__':
+    args = parse_args()
     main()

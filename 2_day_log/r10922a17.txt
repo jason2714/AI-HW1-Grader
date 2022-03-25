@@ -1,0 +1,140 @@
+searchTestClasses
+searchTestClasses.py
+Starting on 3-24 at 7:43:03
+
+Question q1
+===========
+
+*** PASS: test_cases/q1/graph_backtrack.test
+*** 	solution:		['1:A->C', '0:C->G']
+*** 	expanded_states:	['A', 'D', 'C']
+*** PASS: test_cases/q1/graph_bfs_vs_dfs.test
+*** 	solution:		['2:A->D', '0:D->G']
+*** 	expanded_states:	['A', 'D']
+*** PASS: test_cases/q1/graph_infinite.test
+*** 	solution:		['0:A->B', '1:B->C', '1:C->G']
+*** 	expanded_states:	['A', 'B', 'C']
+*** PASS: test_cases/q1/graph_manypaths.test
+*** 	solution:		['2:A->B2', '0:B2->C', '0:C->D', '2:D->E2', '0:E2->F', '0:F->G']
+*** 	expanded_states:	['A', 'B2', 'C', 'D', 'E2', 'F']
+*** PASS: test_cases/q1/pacman_1.test
+*** 	pacman layout:		mediumMaze
+*** 	solution length: 130
+*** 	nodes expanded:		146
+
+### Question q1: 20/20 ###
+
+
+Question q2
+===========
+
+*** PASS: test_cases/q2/graph_backtrack.test
+*** 	solution:		['1:A->C', '0:C->G']
+*** 	expanded_states:	['A', 'B', 'C', 'D']
+*** PASS: test_cases/q2/graph_bfs_vs_dfs.test
+*** 	solution:		['1:A->G']
+*** 	expanded_states:	['A', 'B']
+*** PASS: test_cases/q2/graph_infinite.test
+*** 	solution:		['0:A->B', '1:B->C', '1:C->G']
+*** 	expanded_states:	['A', 'B', 'C']
+*** FAIL: test_cases/q2/graph_manypaths.test
+*** 	graph:
+*** 	        B1          E1
+*** 	       ^  \        ^  \
+*** 	      /    V      /    V
+*** 	    *A --> C --> D --> F --> [G]
+*** 	      \    ^      \    ^
+*** 	       V  /        V  /
+*** 	        B2          E2
+*** 	    
+*** 	    A is the start state, G is the goal.  Arrows mark 
+*** 	    possible state transitions.  This graph has multiple
+*** 	    paths to the goal, where nodes with the same state 
+*** 	    are added to the fringe multiple times before they
+*** 	    are expanded.
+*** 	student solution:		['0:A->B1', '0:B1->C', '0:C->D', '0:D->E1', '0:E1->F', '0:F->G']
+*** 	student expanded_states:	['A', 'B1', 'C', 'B2', 'D', 'E1', 'F', 'E2']
+*** 
+*** 	correct solution:		['1:A->C', '0:C->D', '1:D->F', '0:F->G']
+*** 	correct expanded_states:	['A', 'B1', 'C', 'B2', 'D', 'E1', 'F', 'E2']
+*** 	correct rev_solution:		['1:A->C', '0:C->D', '1:D->F', '0:F->G']
+*** 	correct rev_expanded_states:	['A', 'B2', 'C', 'B1', 'D', 'E2', 'F', 'E1']
+*** PASS: test_cases/q2/pacman_1.test
+*** 	pacman layout:		mediumMaze
+*** 	solution length: 68
+*** 	nodes expanded:		269
+*** Tests failed.
+
+### Question q2: 0/20 ###
+
+
+Question q3
+===========
+
+invalid action sequence
+*** FAIL: Exception raised: global name 'sys' is not defined
+*** 
+*** Traceback (most recent call last):
+***   File "/home/hw1/grading.py", line 80, in grade
+***     util.TimeoutFunction(getattr(gradingModule, q), 5)(self)  # Call the question's function
+***   File "/home/hw1/util.py", line 661, in __call__
+***     result = self.function(*args, **keyArgs)
+***   File "autograder.py", line 311, in <lambda>
+***     return lambda grades: question.execute(grades)
+***   File "/home/hw1/testClasses.py", line 57, in execute
+***     if not f(grades):
+***   File "autograder.py", line 305, in <lambda>
+***     return lambda grades: testCase.execute(grades, moduleDict, solutionDict)
+***   File "searchTestClasses.py", line 201, in execute
+***     solution, expanded_states, error = self.getSolInfo(search)
+***   File "searchTestClasses.py", line 185, in getSolInfo
+***     solution = alg(problem)
+***   File "r10922a17_hw1.py", line 149, in uniformCostSearch
+***   File "searchTestClasses.py", line 124, in getCostOfActions
+***     sys.exit(1)
+*** NameError: global name 'sys' is not defined
+*** 
+
+### Question q3: 0/30 ###
+
+
+Question q4
+===========
+
+invalid action sequence
+*** FAIL: Exception raised: global name 'sys' is not defined
+*** 
+*** Traceback (most recent call last):
+***   File "/home/hw1/grading.py", line 80, in grade
+***     util.TimeoutFunction(getattr(gradingModule, q), 5)(self)  # Call the question's function
+***   File "/home/hw1/util.py", line 661, in __call__
+***     result = self.function(*args, **keyArgs)
+***   File "autograder.py", line 311, in <lambda>
+***     return lambda grades: question.execute(grades)
+***   File "/home/hw1/testClasses.py", line 57, in execute
+***     if not f(grades):
+***   File "autograder.py", line 305, in <lambda>
+***     return lambda grades: testCase.execute(grades, moduleDict, solutionDict)
+***   File "searchTestClasses.py", line 201, in execute
+***     solution, expanded_states, error = self.getSolInfo(search)
+***   File "searchTestClasses.py", line 185, in getSolInfo
+***     solution = alg(problem)
+***   File "r10922a17_hw1.py", line 187, in aStarSearch
+***   File "searchTestClasses.py", line 124, in getCostOfActions
+***     sys.exit(1)
+*** NameError: global name 'sys' is not defined
+*** 
+
+### Question q4: 0/30 ###
+
+
+Finished at 7:43:03
+
+Provisional grades
+==================
+Question q1: 20/20
+Question q2: 0/20
+Question q3: 0/30
+Question q4: 0/30
+------------------
+Total: 20/100
